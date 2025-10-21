@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Activity, AlertCircle, Loader2, Clock, Target, Star, CheckCircle } from 'lucide-react';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { TrendingUp, Activity, AlertCircle, Loader2, Clock, Target, Star, Download } from 'lucide-react';
 import { complaintAPI } from '../services/api';
 
 const Analytics = ({ refreshTrigger }) => {
@@ -22,6 +22,76 @@ const Analytics = ({ refreshTrigger }) => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Export to CSV function
+  const exportToCSV = async () => {
+    try {
+      const complaints = await complaintAPI.getComplaints({ limit: 1000 });
+      
+      // CSV Header
+      const headers = ['ID', 'Customer Name', 'Email', 'Category', 'Sentiment', 'Priority', 'Status', 'Date', 'Complaint Text'];
+      
+      // CSV Rows
+      const rows = complaints.map(c => [
+        c.id,
+        c.customer_name,
+        c.customer_email,
+        c.category,
+        c.sentiment,
+        c.priority,
+        c.status,
+        new Date(c.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+        `"${c.text.replace(/"/g, '""')}"` // Escape quotes
+      ]);
+      
+      // Combine
+      const csv = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+      
+      // Download
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `complaints_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+    } catch (err) {
+      alert('Failed to export: ' + err.message);
+    }
+  };
+
+  // Export to JSON function
+  const exportToJSON = async () => {
+    try {
+      const complaints = await complaintAPI.getComplaints({ limit: 1000 });
+      
+      const json = JSON.stringify({
+        exported_at: new Date().toISOString(),
+        total_complaints: complaints.length,
+        analytics: analytics,
+        complaints: complaints
+      }, null, 2);
+      
+      const blob = new Blob([json], { type: 'application/json' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `complaints_analytics_${new Date().toISOString().split('T')[0]}.json`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+    } catch (err) {
+      alert('Failed to export: ' + err.message);
     }
   };
 
@@ -89,8 +159,47 @@ const Analytics = ({ refreshTrigger }) => {
   const neutralPercent = sentimentData.find(s => s.name === 'Neutral')?.percentage || 0;
   const negativePercent = sentimentData.find(s => s.name === 'Negative')?.percentage || 0;
 
+  // Custom label for pie chart (positioned outside)
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius + 30;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="#374151"
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
+        className="text-sm font-medium"
+      >
+        {`${name}: ${(percent * 100).toFixed(1)}%`}
+      </text>
+    );
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Export Buttons */}
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={exportToCSV}
+          className="flex items-center gap-2 px-4 py-2 bg-success-600 hover:bg-success-700 text-white rounded-lg transition-colors shadow-md"
+        >
+          <Download className="w-4 h-4" />
+          Export to CSV
+        </button>
+        <button
+          onClick={exportToJSON}
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors shadow-md"
+        >
+          <Download className="w-4 h-4" />
+          Export to JSON
+        </button>
+      </div>
+
       {/* Top Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Complaints */}
@@ -175,7 +284,7 @@ const Analytics = ({ refreshTrigger }) => {
         {/* Trending Issues */}
         <div className="bg-white rounded-xl shadow-lg p-6 card-hover">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800">🔥 Trending Issues (This Week)</h3>
+            <h3 className="text-lg font-bold text-gray-800">🔥 Trending Issues</h3>
             <Target className="w-6 h-6 text-danger-600" />
           </div>
           <div className="space-y-3">
@@ -237,19 +346,19 @@ const Analytics = ({ refreshTrigger }) => {
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Category Distribution */}
+        {/* Category Distribution - FIXED LABELS */}
         <div className="bg-white rounded-xl shadow-lg p-6 card-hover">
           <h3 className="text-lg font-bold text-gray-800 mb-4">Complaint Categories</h3>
           {categoryData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
                   data={categoryData}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
-                  label={({ name, percentage }) => `${name}: ${percentage}%`}
-                  outerRadius={120}
+                  labelLine={true}
+                  label={renderCustomLabel}
+                  outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -277,7 +386,7 @@ const Analytics = ({ refreshTrigger }) => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => `${percentage}%`}
+                    label={({ percentage }) => `${(percentage * 100).toFixed(1)}%`}
                     outerRadius={90}
                     fill="#8884d8"
                     dataKey="value"

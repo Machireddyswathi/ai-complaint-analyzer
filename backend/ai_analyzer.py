@@ -231,25 +231,218 @@ def calculate_response_due_time(priority: str):
 
 
 def suggest_action(category: str, sentiment: str, priority: str, customer_email: str) -> str:
-    """Professional action suggestions"""
+    """
+    Generate specific action recommendations based on complaint details
+    """
+    
+    # Comprehensive action mapping
     actions = {
-        ("Billing Issues", "negative", "high"): f"⚠️ URGENT: Contact {customer_email} within 2 hours. Escalate to billing manager.",
-        ("Delivery Issues", "negative", "high"): f"🚚 URGENT: Email {customer_email} immediately with tracking update.",
-        ("Technical Support", "neutral", "low"): f"💡 Forward feedback to product team. Thank {customer_email} for suggestion.",
-        ("Refund Requests", "negative", "high"): f"💰 URGENT: Process refund for {customer_email}. Get manager approval.",
-        ("Service Quality", "neutral", "low"): f"📋 Acknowledge {customer_email}. Forward to management for review.",
+        # BILLING ISSUES
+        ("Billing Issues", "negative", "high"): 
+            f"⚠️ URGENT ACTION REQUIRED:\n"
+            f"1. Call {customer_email} within 2 hours\n"
+            f"2. Review billing records immediately\n"
+            f"3. Prepare refund/credit authorization\n"
+            f"4. Escalate to Billing Manager\n"
+            f"5. Document resolution for legal compliance",
+        
+        ("Billing Issues", "negative", "medium"): 
+            f"💳 PRIORITY ACTION:\n"
+            f"1. Email {customer_email} within 6 hours\n"
+            f"2. Verify payment transaction details\n"
+            f"3. Assign to Senior Billing Specialist\n"
+            f"4. Provide itemized statement\n"
+            f"5. Offer payment plan if applicable",
+        
+        ("Billing Issues", "neutral", "low"): 
+            f"📋 STANDARD PROCEDURE:\n"
+            f"1. Email {customer_email} within 48 hours\n"
+            f"2. Send billing clarification document\n"
+            f"3. Assign to Billing Support Team\n"
+            f"4. Schedule follow-up call if needed",
+        
+        ("Billing Issues", "positive", "low"): 
+            f"✅ ACKNOWLEDGMENT:\n"
+            f"1. Thank {customer_email} for patience\n"
+            f"2. Confirm billing issue resolved\n"
+            f"3. Offer loyalty discount (10% next purchase)\n"
+            f"4. Update customer satisfaction record",
+        
+        # DELIVERY ISSUES
+        ("Delivery Issues", "negative", "high"): 
+            f"🚚 IMMEDIATE ESCALATION:\n"
+            f"1. Contact {customer_email} within 1 hour\n"
+            f"2. Track shipment with courier urgently\n"
+            f"3. Offer expedited replacement shipping\n"
+            f"4. Escalate to Logistics Manager\n"
+            f"5. Provide tracking updates every 4 hours\n"
+            f"6. Consider partial refund for inconvenience",
+        
+        ("Delivery Issues", "negative", "medium"): 
+            f"📦 PRIORITY TRACKING:\n"
+            f"1. Email {customer_email} within 6 hours\n"
+            f"2. Request tracking update from courier\n"
+            f"3. Assign to Delivery Resolution Team\n"
+            f"4. Provide estimated delivery timeline\n"
+            f"5. Offer shipping refund if delayed >3 days",
+        
+        ("Delivery Issues", "neutral", "low"): 
+            f"📋 STANDARD FOLLOW-UP:\n"
+            f"1. Email {customer_email} within 24 hours\n"
+            f"2. Share current tracking status\n"
+            f"3. Set delivery expectation window\n"
+            f"4. Provide customer service contact",
+        
+        # TECHNICAL SUPPORT
+        ("Technical Support", "negative", "high"): 
+            f"🔧 CRITICAL TECHNICAL ISSUE:\n"
+            f"1. Assign senior engineer immediately\n"
+            f"2. Call {customer_email} within 2 hours\n"
+            f"3. Provide temporary workaround solution\n"
+            f"4. Escalate to Tech Lead\n"
+            f"5. Schedule screen-sharing session\n"
+            f"6. Commit to resolution timeline",
+        
+        ("Technical Support", "negative", "medium"): 
+            f"💻 TECHNICAL ASSISTANCE:\n"
+            f"1. Email {customer_email} within 12 hours\n"
+            f"2. Assign to Technical Support Specialist\n"
+            f"3. Request system logs/screenshots\n"
+            f"4. Provide troubleshooting guide\n"
+            f"5. Schedule callback within 24 hours",
+        
+        ("Technical Support", "neutral", "low"): 
+            f"💡 FEATURE FEEDBACK:\n"
+            f"1. Thank {customer_email} for suggestion\n"
+            f"2. Forward to Product Development Team\n"
+            f"3. Add to feature request backlog\n"
+            f"4. Provide timeline for consideration\n"
+            f"5. Offer to join beta testing program",
+        
+        # PRODUCT QUALITY
+        ("Product Quality", "negative", "high"): 
+            f"📦 QUALITY ISSUE ESCALATION:\n"
+            f"1. Contact {customer_email} immediately\n"
+            f"2. Arrange free return shipping label\n"
+            f"3. Offer replacement + 20% discount\n"
+            f"4. Escalate to Quality Assurance Manager\n"
+            f"5. Investigate batch/lot number\n"
+            f"6. Document for supplier feedback",
+        
+        ("Product Quality", "negative", "medium"): 
+            f"🔍 QUALITY REVIEW:\n"
+            f"1. Email {customer_email} within 8 hours\n"
+            f"2. Request product photos/description\n"
+            f"3. Offer exchange or refund options\n"
+            f"4. Assign to Quality Control Team\n"
+            f"5. Provide return instructions",
+        
+        # REFUND REQUESTS
+        ("Refund Requests", "negative", "high"): 
+            f"💰 URGENT REFUND PROCESSING:\n"
+            f"1. Call {customer_email} within 1 hour\n"
+            f"2. Verify refund eligibility immediately\n"
+            f"3. Process refund within 24 hours\n"
+            f"4. Escalate to Finance Manager if >$500\n"
+            f"5. Send refund confirmation email\n"
+            f"6. Offer future purchase credit (15% bonus)",
+        
+        ("Refund Requests", "negative", "medium"): 
+            f"💵 REFUND REVIEW:\n"
+            f"1. Email {customer_email} within 6 hours\n"
+            f"2. Review return policy compliance\n"
+            f"3. Request order details and reason\n"
+            f"4. Process standard refund (3-5 business days)\n"
+            f"5. Provide refund tracking information",
+        
+        ("Refund Requests", "positive", "low"): 
+            f"✅ REFUND ACKNOWLEDGMENT:\n"
+            f"1. Confirm refund received by {customer_email}\n"
+            f"2. Request feedback on experience\n"
+            f"3. Offer 10% discount on future purchase\n"
+            f"4. Update customer satisfaction metrics",
+        
+        # SERVICE QUALITY
+        ("Service Quality", "negative", "high"): 
+            f"👤 SERVICE RECOVERY:\n"
+            f"1. Manager to call {customer_email} within 2 hours\n"
+            f"2. Review service interaction logs\n"
+            f"3. Offer sincere apology + compensation\n"
+            f"4. Retrain involved staff member\n"
+            f"5. Assign dedicated account manager\n"
+            f"6. Follow up within 48 hours",
+        
+        ("Service Quality", "negative", "medium"): 
+            f"📞 SERVICE IMPROVEMENT:\n"
+            f"1. Email {customer_email} within 8 hours\n"
+            f"2. Assign to Customer Service Supervisor\n"
+            f"3. Review service standards with team\n"
+            f"4. Offer direct contact for future issues\n"
+            f"5. Request detailed feedback",
+        
+        ("Service Quality", "neutral", "low"): 
+            f"📋 FEEDBACK COLLECTION:\n"
+            f"1. Thank {customer_email} for feedback\n"
+            f"2. Forward to Service Training Department\n"
+            f"3. Use for staff coaching session\n"
+            f"4. Send follow-up satisfaction survey",
+        
+        # ACCOUNT ISSUES
+        ("Account Issues", "negative", "high"): 
+            f"🔐 URGENT ACCOUNT ACCESS:\n"
+            f"1. Contact {customer_email} immediately\n"
+            f"2. Verify identity through security questions\n"
+            f"3. Reset credentials within 1 hour\n"
+            f"4. Escalate to IT Security Team\n"
+            f"5. Enable two-factor authentication\n"
+            f"6. Monitor account for suspicious activity",
+        
+        ("Account Issues", "negative", "medium"): 
+            f"🔑 ACCOUNT ASSISTANCE:\n"
+            f"1. Email {customer_email} within 4 hours\n"
+            f"2. Send password reset link\n"
+            f"3. Provide account recovery guide\n"
+            f"4. Assign to Account Support Specialist\n"
+            f"5. Schedule verification callback",
     }
     
+    # Try to find exact match
     key = (category, sentiment, priority)
     if key in actions:
         return actions[key]
     
-    if priority == "high":
-        return f"⚠️ Contact {customer_email} within 2 hours. Assign to {category} lead."
-    elif priority == "medium":
-        return f"📌 Email {customer_email} within 24 hours."
-    else:
-        return f"📋 Respond to {customer_email} within 48 hours."
+    # Fallback with dynamic generation
+    urgency_map = {
+        "high": {
+            "timeframe": "2 hours",
+            "method": "Call",
+            "escalation": "Escalate to department manager",
+            "compensation": "Offer immediate compensation/solution"
+        },
+        "medium": {
+            "timeframe": "12 hours",
+            "method": "Email",
+            "escalation": "Assign to senior specialist",
+            "compensation": "Review compensation options"
+        },
+        "low": {
+            "timeframe": "48 hours",
+            "method": "Email",
+            "escalation": "Route to standard queue",
+            "compensation": "Acknowledge and thank customer"
+        }
+    }
+    
+    urgency = urgency_map.get(priority, urgency_map["medium"])
+    
+    return (
+        f" ACTION PLAN:\n"
+        f"1. {urgency['method']} {customer_email} within {urgency['timeframe']}\n"
+        f"2. {urgency['escalation']}\n"
+        f"3. Assign to {category} department\n"
+        f"4. {urgency['compensation']}\n"
+        f"5. Document resolution and follow up"
+    )
 
 
 def analyze_complaint(text: str, customer_email: str = "customer@example.com") -> Dict:
@@ -257,8 +450,8 @@ def analyze_complaint(text: str, customer_email: str = "customer@example.com") -
     if not text or len(text.strip()) < 10:
         raise ValueError("⚠️ Complaint must be at least 10 characters long")
     
-    if len(text) < 50:
-        raise ValueError("⚠️ Please provide more details (minimum 50 characters)")
+    if len(text) < 15:
+        raise ValueError("⚠️ Please provide more details (minimum 15 characters)")
     
     try:
         category_result = classify_complaint(text)

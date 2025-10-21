@@ -34,7 +34,7 @@ app.add_middleware(
 class ComplaintInput(BaseModel):
     customer_name: str = Field(..., min_length=2, max_length=100)
     customer_email: EmailStr
-    text: str = Field(..., min_length=50, max_length=2000)
+    text: str = Field(..., min_length=15, max_length=2000)
 
 
 class ComplaintResponse(BaseModel):

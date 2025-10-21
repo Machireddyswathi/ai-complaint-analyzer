@@ -29,12 +29,9 @@ function App() {
                 AI Complaint Analyzer
               </h1>
               <p className="text-gray-600 mt-1 text-sm">
-                Enterprise-grade complaint management powered by <span className="font-semibold text-primary-600">Facebook RoBERTa</span>
+                Enterprise-grade complaint management powered by{' '}
+                <span className="font-semibold text-primary-600">Facebook RoBERTa</span>
               </p>
-            </div>
-            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-success-50 border border-success-200 rounded-lg">
-              <div className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-success-700">System Online</span>
             </div>
           </div>
         </div>
@@ -90,7 +87,7 @@ function App() {
         )}
       </main>
 
-      {/* Professional Footer with Icon-Only Social Links */}
+      {/* Professional Footer */}
       <footer className="bg-white border-t border-gray-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
@@ -104,37 +101,40 @@ function App() {
               </p>
             </div>
 
-            {/* Center: Developer Info */}
-            <div className="text-center">
+            {/* Center (empty to balance layout) */}
+            <div></div>
+
+            {/* Right: Developer Info with Social Links Below */}
+            <div className="text-right">
               <p className="text-base font-bold text-gray-800">
                 Swathi Machireddy
               </p>
               <p className="text-sm text-gray-600 mt-1">
                 Full Stack AI Developer
               </p>
-            </div>
 
-            {/* Right: Icon-Only Social Links */}
-            <div className="flex items-center justify-center md:justify-end gap-3">
-              <a
-                href="https://www.linkedin.com/in/swathi5854"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center justify-center w-10 h-10 bg-[#0077b5] hover:bg-[#006399] text-white rounded-full transition-all shadow-md hover:shadow-lg hover:scale-110"
-                title="Connect on LinkedIn"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
+              {/* Social Links Below Name */}
+              <div className="flex justify-end gap-3 mt-3">
+                <a
+                  href="https://www.linkedin.com/in/swathi5854"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-center w-10 h-10 bg-[#0077b5] hover:bg-[#006399] text-white rounded-full transition-all shadow-md hover:shadow-lg hover:scale-110"
+                  title="Connect on LinkedIn"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
 
-              <a
-                href="https://github.com/Machireddyswathi"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-900 text-white rounded-full transition-all shadow-md hover:shadow-lg hover:scale-110"
-                title="View on GitHub"
-              >
-                <Github className="w-5 h-5" />
-              </a>
+                <a
+                  href="https://github.com/Machireddyswathi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-900 text-white rounded-full transition-all shadow-md hover:shadow-lg hover:scale-110"
+                  title="View on GitHub"
+                >
+                  <Github className="w-5 h-5" />
+                </a>
+              </div>
             </div>
           </div>
 
@@ -145,11 +145,6 @@ function App() {
                 © {new Date().getFullYear()} Swathi Machireddy. All rights reserved. |
                 <span className="ml-1">Enterprise Complaint Management System</span>
               </p>
-              <div className="flex items-center gap-4 text-xs text-gray-500">
-                <span>✓ AI-Powered Classification</span>
-                <span>✓ Real-time Analytics</span>
-                <span>✓ IST Timezone Support</span>
-              </div>
             </div>
           </div>
         </div>

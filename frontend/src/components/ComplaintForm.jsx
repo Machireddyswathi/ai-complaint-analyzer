@@ -215,7 +215,7 @@ const ComplaintForm = ({ onSubmitSuccess }) => {
                 ? 'border-danger-500 focus:ring-danger-500 error-shake' 
                 : 'border-gray-300 focus:ring-primary-500'
             }`}
-            placeholder="Describe your complaint in detail... (minimum 50 characters)"
+            placeholder="Describe your complaint in detail... (minimum 15 characters)"
             value={formData.text}
             onChange={handleChange}
             disabled={loading}

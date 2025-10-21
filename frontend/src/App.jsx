@@ -1,43 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MessageSquare, BarChart3, FileText, Linkedin, Github } from 'lucide-react';
 import ComplaintForm from './components/ComplaintForm';
 import Analytics from './components/Analytics';
 import ComplaintsList from './components/ComplaintsList';
-import { complaintAPI } from './services/api';
 
 function App() {
   const [activeTab, setActiveTab] = useState('submit');
   const [refreshKey, setRefreshKey] = useState(0);
-  const [backendStatus, setBackendStatus] = useState('checking'); // checking, online, offline
-
-  // Wake up backend on app load
-  useEffect(() => {
-    const wakeUpBackend = async () => {
-      console.log('🏥 Waking up backend...');
-      try {
-        await complaintAPI.healthCheck();
-        setBackendStatus('online');
-        console.log('✅ Backend is online');
-      } catch (err) {
-        console.log('⏰ Backend is starting up...');
-        setBackendStatus('offline');
-        
-        // Retry after 30 seconds
-        setTimeout(async () => {
-          try {
-            await complaintAPI.healthCheck();
-            setBackendStatus('online');
-            console.log('✅ Backend is now online');
-          } catch (e) {
-            setBackendStatus('offline');
-            console.log('❌ Backend still offline');
-          }
-        }, 30000);
-      }
-    };
-
-    wakeUpBackend();
-  }, []);
 
   const handleSubmitSuccess = () => {
     setRefreshKey((prev) => prev + 1);
@@ -60,53 +29,13 @@ function App() {
                 AI Complaint Analyzer
               </h1>
               <p className="text-gray-600 mt-1 text-sm">
-                Enterprise-grade complaint management powered by <span className="font-semibold text-primary-600">Facebook RoBERTa</span>
+                Enterprise-grade complaint management powered by{' '}
+                <span className="font-semibold text-primary-600">Facebook RoBERTa</span>
               </p>
-            </div>
-            
-            {/* Backend Status Indicator */}
-            <div className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg border ${
-              backendStatus === 'online' 
-                ? 'bg-success-50 border-success-200' 
-                : backendStatus === 'checking'
-                ? 'bg-warning-50 border-warning-200'
-                : 'bg-danger-50 border-danger-200'
-            }`}>
-              <div className={`w-2 h-2 rounded-full ${
-                backendStatus === 'online' 
-                  ? 'bg-success-500 animate-pulse' 
-                  : backendStatus === 'checking'
-                  ? 'bg-warning-500 animate-pulse'
-                  : 'bg-danger-500 animate-pulse'
-              }`}></div>
-              <span className={`text-sm font-medium ${
-                backendStatus === 'online' 
-                  ? 'text-success-700' 
-                  : backendStatus === 'checking'
-                  ? 'text-warning-700'
-                  : 'text-danger-700'
-              }`}>
-                {backendStatus === 'online' 
-                  ? 'System Online' 
-                  : backendStatus === 'checking'
-                  ? 'Starting Up...'
-                  : 'System Offline'}
-              </span>
             </div>
           </div>
         </div>
       </header>
-
-      {/* Show warning banner if backend is offline */}
-      {backendStatus === 'offline' && (
-        <div className="bg-warning-50 border-b border-warning-200 px-4 py-3">
-          <div className="max-w-7xl mx-auto">
-            <p className="text-sm text-warning-800">
-              ⏰ <strong>Backend is starting up.</strong> This happens when the server has been inactive. Please wait 30-60 seconds and try again.
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Navigation Tabs */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -158,7 +87,7 @@ function App() {
         )}
       </main>
 
-      {/* Footer */}
+      {/* Professional Footer */}
       <footer className="bg-white border-t border-gray-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
@@ -171,59 +100,56 @@ function App() {
                 FastAPI • React • AI Classification
               </p>
             </div>
-          </div>
-            {/* Center: Developer Info */}
-            <div className="text-center">
+
+            {/* Center (empty to balance layout) */}
+            <div></div>
+
+            {/* Right: Developer Info with Social Links Below */}
+            <div className="text-right">
               <p className="text-base font-bold text-gray-800">
                 Swathi Machireddy
               </p>
               <p className="text-sm text-gray-600 mt-1">
                 Full Stack AI Developer
               </p>
+
+              {/* Social Links Below Name */}
+              <div className="flex justify-end gap-3 mt-3">
+                <a
+                  href="https://www.linkedin.com/in/swathi5854"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-center w-10 h-10 bg-[#0077b5] hover:bg-[#006399] text-white rounded-full transition-all shadow-md hover:shadow-lg hover:scale-110"
+                  title="Connect on LinkedIn"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
+
+                <a
+                  href="https://github.com/Machireddyswathi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-900 text-white rounded-full transition-all shadow-md hover:shadow-lg hover:scale-110"
+                  title="View on GitHub"
+                >
+                  <Github className="w-5 h-5" />
+                </a>
+              </div>
             </div>
+          </div>
 
-            {/* Right: Icon-Only Social Links */}
-<div className="flex items-center justify-center md:justify-end gap-3">
-  <a
-    href="https://www.linkedin.com/in/swathi5854"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="group flex items-center justify-center w-10 h-10 bg-[#0077b5] hover:bg-[#006399] text-white rounded-full transition-all shadow-md hover:shadow-lg hover:scale-110"
-    title="Connect on LinkedIn"
-  >
-    <Linkedin className="w-5 h-5" />
-  </a>
-
-  <a
-    href="https://github.com/Machireddyswathi"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="group flex items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-900 text-white rounded-full transition-all shadow-md hover:shadow-lg hover:scale-110"
-    title="View on GitHub"
-  >
-    <Github className="w-5 h-5" />
-  </a>
-</div>
-
-
-          {/* Bottom: Copyright & Features */}
+          {/* Bottom: Copyright */}
           <div className="mt-6 pt-6 border-t border-gray-200">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500 text-center md:text-left">
-  © 2025 Swathi Machireddy. All rights reserved. | 
-  <span className="ml-1">Enterprise Complaint Management System</span>
-</p>
-
-              <div className="flex items-center gap-4 text-xs text-gray-500">
-                <span>✓ AI-Powered Classification</span>
-                <span>✓ Real-time Analytics</span>
-                <span>✓ IST Timezone Support</span>
-              </div>
+                © {new Date().getFullYear()} Swathi Machireddy. All rights reserved. |
+                <span className="ml-1">Enterprise Complaint Management System</span>
+              </p>
             </div>
           </div>
         </div>
       </footer>
-      </div>
+    </div>
   );
 }
 

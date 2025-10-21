@@ -210,7 +210,7 @@ function App() {
           <div className="mt-6 pt-6 border-t border-gray-200">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-xs text-gray-500 text-center md:text-left">
-  © {currentYear} Swathi Machireddy. All rights reserved. | 
+  © 2025 Swathi Machireddy. All rights reserved. | 
   <span className="ml-1">Enterprise Complaint Management System</span>
 </p>
 
